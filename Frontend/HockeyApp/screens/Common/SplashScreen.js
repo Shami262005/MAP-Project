@@ -79,7 +79,7 @@ export default function SplashScreen({ onFinish }) {
       />
 
       <Animated.Image
-        source={require('../assets/logo.png')}
+        source={require('../../assets/logo.png')}
         style={[
           styles.logo,
           {

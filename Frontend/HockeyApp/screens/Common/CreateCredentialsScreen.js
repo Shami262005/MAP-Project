@@ -12,10 +12,12 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-export default function LoginScreen({ navigation }) {
+export default function CreateCredentialsScreen({ navigation }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   return (
     <ImageBackground
@@ -26,15 +28,19 @@ export default function LoginScreen({ navigation }) {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.avoidingView}
       >
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
-        >
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <TouchableOpacity
+            style={styles.backIcon}
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons name="arrow-back" size={26} color="white" />
+          </TouchableOpacity>
+
           <View style={styles.card}>
-            <Text style={styles.title}>Welcome Back</Text>
+            <Text style={styles.title}>Set Up Your Account</Text>
 
             <TextInput
-              style={[styles.input, { marginBottom: 25 }]} // extra spacing after username
+              style={[styles.input, { marginBottom: 17 }]}
               placeholder="Username"
               placeholderTextColor="#999"
               value={username}
@@ -62,19 +68,29 @@ export default function LoginScreen({ navigation }) {
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity
-  style={styles.button}
-  onPress={() => navigation.replace('AdminNavigator')}
->
-  <Text style={styles.buttonText}>Log In</Text>
-</TouchableOpacity>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.input}
+                placeholder="Confirm Password"
+                placeholderTextColor="#999"
+                secureTextEntry={!showConfirm}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+              />
+              <TouchableOpacity
+                style={styles.iconButton}
+                onPress={() => setShowConfirm(!showConfirm)}
+              >
+                <Ionicons
+                  name={showConfirm ? 'eye-off' : 'eye'}
+                  size={22}
+                  color="#22396D"
+                />
+              </TouchableOpacity>
+            </View>
 
-
-            <TouchableOpacity onPress={() => navigation.navigate('SetupAccount')}>
-              <Text style={styles.link}>
-                Don’t Have a username and Password?{' '}
-                <Text style={styles.linkBold}>Set it up now</Text>
-              </Text>
+            <TouchableOpacity style={styles.button}>
+              <Text style={styles.buttonText}>Continue</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -95,19 +111,26 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'flex-end',
   },
+  backIcon: {
+    position: 'absolute',
+    top: 50,
+    left: 20,
+    zIndex: 10,
+  },
   card: {
     backgroundColor: '#fff',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    padding: 25,
-    paddingBottom: 40,
+    paddingTop: 30,
+    paddingBottom: 50,
+    paddingHorizontal: 25,
     alignItems: 'center',
   },
   title: {
     fontSize: 22,
     fontWeight: '700',
-    marginBottom: 20,
     color: '#22396D',
+    marginBottom: 25,
   },
   input: {
     width: '100%',
@@ -131,21 +154,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 12,
     paddingHorizontal: 30,
-    marginBottom: 10,
     width: '100%',
     alignItems: 'center',
+    marginTop: 10,
   },
   buttonText: {
     color: '#fff',
     fontWeight: '600',
     fontSize: 16,
-  },
-  link: {
-    color: 'red',
-    textAlign: 'center',
-    marginTop: 10,
-  },
-  linkBold: {
-    fontWeight: 'bold',
   },
 });

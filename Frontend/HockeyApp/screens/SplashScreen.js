@@ -11,7 +11,9 @@ import {
 const { width, height } = Dimensions.get('window');
 const BALL_SIZE = 60;
 // drop-to-middle
-const dropY = height / 2 - BALL_SIZE / 2;
+const dropY = height - BALL_SIZE * 2; // Drop to near bottom
+const bounceY = height / 2 - BALL_SIZE / 2; // Then bounce up to center
+
 // diagonal-based scale + 10% fudge
 const diagonal  = Math.hypot(width, height);
 const finalScale = (diagonal / BALL_SIZE) * 1.1;
@@ -26,42 +28,48 @@ export default function SplashScreen({ onFinish }) {
   useEffect(() => {
     // 1) drop + bounce, pause, then expand
     Animated.sequence([
+      // Drop to bottom
       Animated.timing(ballY, {
         toValue: dropY,
-        duration: 1000,
+        duration: 800,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      }),
+      // Bounce up to middle
+      Animated.timing(ballY, {
+        toValue: bounceY,
+        duration: 600,
         easing: Easing.bounce,
         useNativeDriver: true,
       }),
-      Animated.delay(80),
+      // Expand
       Animated.timing(ballScale, {
         toValue: finalScale,
-        duration: 800,
-        easing: Easing.out(Easing.ease),
+        duration: 700,
+        easing: Easing.out(Easing.exp),
         useNativeDriver: true,
       }),
     ]).start(() => {
-      // as soon as expansion ends, flip container to white
       setBgColor('#FFFFFF');
-
-      // then do the logo fade/scale
+    
       Animated.sequence([
-        Animated.delay(500),
+        Animated.delay(300),
         Animated.parallel([
           Animated.timing(logoOpacity, {
             toValue: 1,
-            duration: 600,
+            duration: 500,
             useNativeDriver: true,
           }),
           Animated.timing(logoScale, {
             toValue: 1,
-            duration: 600,
-            easing: Easing.out(Easing.ease),
+            duration: 500,
             useNativeDriver: true,
           }),
         ]),
-        Animated.delay(9000),
+        Animated.delay(2000),
       ]).start(() => onFinish && onFinish());
     });
+    
   }, []);
 
   return (
