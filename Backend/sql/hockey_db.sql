@@ -24,6 +24,26 @@ create type user_role as enum (
     'player'
 );
 
+-- team table
+create table team (
+    team_id serial primary key,
+    team_name varchar(100) not null unique,
+    contact varchar(100) not null,
+    team_address varchar(200),
+    category team_category not null,
+    league team_league not null,
+    logo_url text
+);
+-- events table
+create table events (
+    event_id serial primary key,
+    event_name varchar(100) not null,
+    type event_type not null,
+    venue varchar(200), 
+    date timestamp default current_timestamp,
+    description text
+);
+
 -- users table [role based]
 create table users (
     user_id serial primary key,
@@ -43,16 +63,9 @@ create table team_manager (
     team_id int not null  references team(team_id)
 );
 
--- team table
-create table team (
-    team_id serial primary key,
-    team_name varchar(100) not null unique,
-    contact varchar(100) not null,
-    team_address varchar(200),
-    category team_category not null,
-    league team_league not null,
-    logo_url text
-);
+alter table users
+add column email varchar(200) not null unique;
+
 
 -- invitations joint table : many to many relationship between users and events
 create table user_events_invitations (
@@ -61,15 +74,7 @@ create table user_events_invitations (
     user_id int not null references users(user_id)
 );
 
--- events table
-create table events (
-    event_id serial primary key,
-    event_name varchar(100) not null,
-    type event_type not null,
-    venue varchar(200), 
-    date timestamp default current_timestamp,
-    description text
-);
+
 
 -- announcements table
 create table announcements (
