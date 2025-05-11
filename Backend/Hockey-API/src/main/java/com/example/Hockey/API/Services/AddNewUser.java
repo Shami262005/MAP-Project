@@ -33,11 +33,12 @@ public class AddNewUser implements Command<User, String> {
         input.setHashed_Password(EncryptedPassword);
         Userepo.save(input);
         Team_Manager NewManaberorPlayer = new Team_Manager(input.getUser_id(),input.getTeam_id());
-        PlayerOrManager.save(NewManaberorPlayer);
+        //PlayerOrManager.save(NewManaberorPlayer);
         Send.sendEmail(input.getEmail(),"Login Code","");
         randomCode = 10000000 + rnd.nextInt(90000000);
         String StringCode = Integer.toString(randomCode);
         Send.sendEmail(input.getEmail(),"Login Code",StringCode);
+
         return ResponseEntity.ok().body("New user successfully created");
     }
 }
