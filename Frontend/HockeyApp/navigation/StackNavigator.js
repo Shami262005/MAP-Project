@@ -18,7 +18,7 @@ export default function StackNavigator() {
       <Stack.Screen name="CreateCredentials" component={CreateCredentialsScreen} />
       <Stack.Screen name="AdminNavigator" component={AdminNavigator} /> 
  <Stack.Screen name="TeamManagerNavigator" component={TeamManagerNavigator} /> 
- 
+ <Stack.Screen name="PlayerNavigator" component={PlayerNavigator} />
     </Stack.Navigator>
   );
 }

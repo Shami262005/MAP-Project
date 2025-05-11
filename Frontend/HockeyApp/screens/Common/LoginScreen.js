@@ -11,11 +11,22 @@ import {
   ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { login } from '../../src/api/auth';
 
 export default function LoginScreen({ navigation }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleLogin = async () => {
+    try {
+      await login({ username, password });
+      navigation.replace('AdminNavigator');
+    } catch (e) {
+      const msg = e.response?.data || e.message || 'Login failed';
+      alert(msg);
+    }
+  };
 
   return (
     <ImageBackground
@@ -34,7 +45,7 @@ export default function LoginScreen({ navigation }) {
             <Text style={styles.title}>Welcome Back</Text>
 
             <TextInput
-              style={[styles.input, { marginBottom: 25 }]} // extra spacing after username
+              style={[styles.input, { marginBottom: 25 }]}
               placeholder="Username"
               placeholderTextColor="#999"
               value={username}
@@ -63,12 +74,11 @@ export default function LoginScreen({ navigation }) {
             </View>
 
             <TouchableOpacity
-  style={styles.button}
-  onPress={() => navigation.replace('TeamManagerNavigator')}
->
-  <Text style={styles.buttonText}>Log In</Text>
-</TouchableOpacity>
-
+              style={styles.button}
+              onPress={handleLogin}
+            >
+              <Text style={styles.buttonText}>Log In</Text>
+            </TouchableOpacity>
 
             <TouchableOpacity onPress={() => navigation.navigate('SetupAccount')}>
               <Text style={styles.link}>

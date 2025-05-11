@@ -7,7 +7,7 @@ import com.example.Hockey.API.Services.AddNewUser;
 import com.example.Hockey.API.Services.ValidateUser;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+@CrossOrigin(origins = "*")  
 @RestController
 @RequestMapping("Admin/")
 public class AdminController {
