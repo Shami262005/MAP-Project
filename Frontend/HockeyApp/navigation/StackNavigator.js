@@ -5,6 +5,8 @@ import LoginScreen from '../screens/Common/LoginScreen';
 import SetupAccountScreen from '../screens/Common/SetupAccountScreen';
 import CreateCredentialsScreen from '../screens/Common/CreateCredentialsScreen';
 import AdminNavigator from './AdminNavigator';
+import PlayerNavigator from './PlayerNavigator';
+import TeamManagerNavigator from './TeamManagerNavigator';
 // ✅ This creates the Stack navigator instance
 const Stack = createNativeStackNavigator();
 
@@ -15,6 +17,8 @@ export default function StackNavigator() {
       <Stack.Screen name="SetupAccount" component={SetupAccountScreen} />
       <Stack.Screen name="CreateCredentials" component={CreateCredentialsScreen} />
       <Stack.Screen name="AdminNavigator" component={AdminNavigator} /> 
+ <Stack.Screen name="TeamManagerNavigator" component={TeamManagerNavigator} /> 
+ 
     </Stack.Navigator>
   );
 }
