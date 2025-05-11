@@ -8,9 +8,9 @@ import org.springframework.validation.annotation.Validated;
 @Table(name = "users")
 public class User {
 
-    @Column(name = "user_id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private int User_id;
     @Column(name = "first_name")
     private String FirstName;
