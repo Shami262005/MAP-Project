@@ -2,6 +2,8 @@ package com.example.Hockey.API.Models;
 
 import com.example.Hockey.API.RoleType;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 import org.springframework.validation.annotation.Validated;
 
 @Entity
@@ -20,13 +22,15 @@ public class User {
     private String Email;
     @Column(name = "password")
     private String hashed_Password;
+    @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     @Column(name = "user_role",nullable = false)
-    private RoleType UserRole;
+    private RoleType UserRole ;
     @Column(name = "username",unique = true,nullable = false)
     private String Username;
-    @Column(name = "Phone_Number")
+    @Column(name = "phone")
     private Long phone_Number;
-
+    @Transient
     private int Team_id;
 
     public int getTeam_id() {

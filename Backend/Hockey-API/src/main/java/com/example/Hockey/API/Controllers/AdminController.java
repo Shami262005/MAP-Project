@@ -27,6 +27,9 @@ public class AdminController {
 
     @PutMapping("NewUser")
     public ResponseEntity<String> putUser(@RequestBody User NewUser){
+
+        System.out.println(NewUser.getEmail());
+        System.out.println(NewUser.getFirstName());
         return CreateUser.execute(NewUser);
     }
 
