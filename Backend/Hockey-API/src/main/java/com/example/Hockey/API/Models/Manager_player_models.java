@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "TeamMembers")
 public class Manager_player_models {
-    @Id()
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Code_id")
     private Long Code_id;

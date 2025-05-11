@@ -27,6 +27,16 @@ public class User {
     @Column(name = "Phone_Number")
     private Long phone_Number;
 
+    private int Team_id;
+
+    public int getTeam_id() {
+        return Team_id;
+    }
+
+    public void setTeam_id(int team_id) {
+        Team_id = team_id;
+    }
+
     public RoleType getUserRole() {
         return UserRole;
     }
