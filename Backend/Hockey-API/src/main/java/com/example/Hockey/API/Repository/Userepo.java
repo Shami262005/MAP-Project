@@ -2,6 +2,9 @@ package com.example.Hockey.API.Repository;
 
 import com.example.Hockey.API.Models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface Userepo extends JpaRepository<User,String> {
+@Repository
+public interface Userepo extends JpaRepository<User,Integer> {
+    User FindUserbyUsername(String Username);
 }
