@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-HockeyApiApplication<Hockey-API>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.Hockey.API.HockeyApiApplication",
+            "projectName": "Hockey-API",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

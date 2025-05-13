@@ -58,7 +58,7 @@ create table users (
 );
 
 --  users' sub-type table for users referencing team_id [coach, players]
-create table team_manager (
+create table players(
     user_id int primary key references users(user_id),
     team_id int not null references team(team_id)
 );
