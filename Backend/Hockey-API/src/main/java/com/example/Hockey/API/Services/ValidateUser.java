@@ -28,8 +28,8 @@ public class ValidateUser implements Query<LoginModel, UserDTO> {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
         User UserCredentials = userepo.findById(input.getUsername()).orElseThrow(WrongUsernameorPasswordException::new);
         String Password = UserCredentials.getHashed_Password();
-        Boolean isPasswodCorrect = encoder.matches(input.getHashed_Password(),Password);
-        if(isPasswodCorrect){
+        Boolean isPasswordCorrect = encoder.matches(input.getHashed_Password(),Password);
+        if(isPasswordCorrect){
             verifiedUser = new UserDTO(UserCredentials);
         }else {
             throw new WrongUsernameorPasswordException();
