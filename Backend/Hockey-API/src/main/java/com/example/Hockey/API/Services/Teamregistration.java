@@ -16,7 +16,7 @@ public class Teamregistration implements Query<Team,String> {
 
     @Override
     public ResponseEntity<String> execute(Team input) {
-        String Teamname = Teamrop.save(input).getTeam_name();
-        return ResponseEntity.ok().body("Succesfully entered team name: "+Teamname);
+        Team Teamname = Teamrop.save(input);
+        return ResponseEntity.ok().body("Succesfully entered team name: "+Teamname.getTeam_name());
     }
 }

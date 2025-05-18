@@ -24,15 +24,19 @@ public class ValidateUser implements Query<LoginModel, UserDTO> {
     @Transactional
     @Override
     public ResponseEntity<UserDTO> execute(LoginModel input) {
-        UserDTO verifiedUser;
+        UserDTO verifiedUser = null;
+        User UserCredentials;
+        Boolean UserExists = userepo.existsByUsername(input.getUsername());
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
-        User UserCredentials = userepo.findById(input.getUsername()).orElseThrow(WrongUsernameorPasswordException::new);
-        String Password = UserCredentials.getHashed_Password();
-        Boolean isPasswodCorrect = encoder.matches(input.getHashed_Password(),Password);
-        if(isPasswodCorrect){
-            verifiedUser = new UserDTO(UserCredentials);
-        }else {
-            throw new WrongUsernameorPasswordException();
+        if(UserExists) {
+            UserCredentials = userepo.findByUsername(input.getUsername());
+            String Password = UserCredentials.getHashed_Password();
+            boolean isPasswodCorrect = encoder.matches(input.getHashed_Password(), Password);
+            if (isPasswodCorrect) {
+                verifiedUser = new UserDTO(UserCredentials);
+            } else {
+                throw new WrongUsernameorPasswordException();
+            }
         }
         return ResponseEntity.ok().body(verifiedUser);
     }

@@ -29,8 +29,6 @@ public class DeleteTeam {
         }
         return ResponseEntity.ok().body("Deletion of all teams successful");
     }
-    public ResponseEntity<String> DeletebyCategory(teamleague T){
-        reop.DeletebyLeague(T);
-    }
+
 
 }

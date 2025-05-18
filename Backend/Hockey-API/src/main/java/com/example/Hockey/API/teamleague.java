@@ -1,5 +1,14 @@
 package com.example.Hockey.API;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public enum teamleague {
-    juniorleague,firstdivision,premierleague
+    @JsonProperty("junior league")
+    juniorleague
+    ,
+    @JsonProperty("first division")
+    firstdivision
+    ,
+    @JsonProperty("premier league")
+    premierleague
 }
