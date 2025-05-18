@@ -2,15 +2,15 @@ package com.example.Hockey.API.Services;
 
 import com.example.Hockey.API.Interface.Query;
 import com.example.Hockey.API.Models.Team;
-import com.example.Hockey.API.Repository.Teamrepo;
+import com.example.Hockey.API.Repository.TeamRepo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
 public class Teamregistration implements Query<Team,String> {
-    private final Teamrepo Teamrop;
+    private final TeamRepo Teamrop;
 
-    public Teamregistration(Teamrepo teamrop) {
+    public Teamregistration(TeamRepo teamrop) {
         Teamrop = teamrop;
     }
 

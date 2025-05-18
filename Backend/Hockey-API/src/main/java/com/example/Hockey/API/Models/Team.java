@@ -4,7 +4,6 @@ package com.example.Hockey.API.Models;
 import com.example.Hockey.API.TeamCategory;
 import com.example.Hockey.API.teamleague;
 import jakarta.persistence.*;
-import lombok.Data;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 @Entity

@@ -1,18 +1,16 @@
 package com.example.Hockey.API.Services;
 
-import com.example.Hockey.API.Exception_handling.NoTeambyID;
-import com.example.Hockey.API.Repository.Teamrepo;
-import com.example.Hockey.API.teamleague;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import com.example.Hockey.API.Exception_handling.NoTeambyID;
+import com.example.Hockey.API.Repository.TeamRepo;
 
 @Service
 public class DeleteTeam {
-    private final Teamrepo reop;
+    private final TeamRepo reop;
 
-    public DeleteTeam(Teamrepo reop) {
+    public DeleteTeam(TeamRepo reop) {
         this.reop = reop;
     }
 

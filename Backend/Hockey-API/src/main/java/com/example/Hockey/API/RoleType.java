@@ -1,5 +1,7 @@
 package com.example.Hockey.API;
 
 public enum RoleType {
-    admin,coach,player
+    ADMIN,
+    COACH,
+    PLAYER
 }

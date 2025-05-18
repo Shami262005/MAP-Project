@@ -1,18 +1,19 @@
 package com.example.Hockey.API.Services;
 
-import com.example.Hockey.API.Exception_handling.NoTeambyID;
-import com.example.Hockey.API.Interface.Command;
-import com.example.Hockey.API.Models.Team;
-import com.example.Hockey.API.Repository.Teamrepo;
+import java.util.Optional;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import com.example.Hockey.API.Exception_handling.NoTeambyID;
+import com.example.Hockey.API.Interface.Command;
+import com.example.Hockey.API.Models.Team;
+import com.example.Hockey.API.Repository.TeamRepo;
 @Service
 public class getTeamByID implements Command<Integer, Team> {
-    private final Teamrepo teamrepo;
+    private final TeamRepo teamrepo;
 
-    public getTeamByID(Teamrepo teamrepo) {
+    public getTeamByID(TeamRepo teamrepo) {
         this.teamrepo = teamrepo;
     }
 
