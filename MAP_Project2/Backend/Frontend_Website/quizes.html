@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JavaScript Quiz</title>
+  <link rel="icon" href="icons/Logo.jpg">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 0; padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .sidebar3 { position: fixed; left:20px; top:20px; }
+    .sidebar3 a {
+      display:inline-block;
+      padding:10px 15px;
+      background:#4CAF50; color:#fff;
+      text-decoration:none; border-radius:5px;
+    }
+    .sidebar3 a:hover { background:#45a049; }
+    .main-right { margin-left:100px; max-width:800px; }
+    .quiz {
+      background:#fff; padding:20px; margin-bottom:30px;
+      border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1);
+    }
+    .quiz h2 { color:#333; margin-top:0; }
+    .question { margin-bottom:20px; }
+    .question h4 { margin:0 0 8px; font-weight:bold; }
+    pre {
+      background:#f8f9fa; padding:10px; border-radius:4px;
+      overflow-x:auto; margin:8px 0;
+    }
+    .options { margin-left:20px; }
+    .option {
+      margin:8px 0; cursor:pointer; padding:8px;
+      border-radius:4px;
+      user-select: none;
+    }
+    .option:hover { background:#f0f0f0; }
+    .option.selected { background:#d4edda; }
+    .option.correct  { background:#d4edda; font-weight:bold; }
+    .option.incorrect{ background:#f8d7da; }
+    button {
+      background:#4CAF50; color:#fff; border:none;
+      padding:10px 15px; border-radius:4px;
+      cursor:pointer; font-size:16px; margin-top:10px;
+    }
+    button:hover { background:#45a049; }
+    .results {
+      margin-top:20px; padding:15px; background:#e7f3fe;
+      border-radius:4px; display:none;
+      text-align:center;
+    }
+    .badge {
+      font-size:24px;
+      margin-bottom:10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .badge img {
+      width:48px;
+      height:48px;
+      margin-right:10px;
+    }
+    .score { font-size:18px; font-weight:bold; margin-bottom:10px; }
+    .feedback-ai { margin-top:10px; font-style:italic; }
+    /* confetti canvas overrides */
+    #confettiCanvas {
+      position:fixed; top:0; left:0;
+      width:100%; height:100%;
+      pointer-events:none;
+      z-index:9999;
+      display:none;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar3">
+    <a href="index.html">Go Back</a>
+  </div>
+  <main class="main-right">
+    <div id="quiz1" class="quiz"></div>
+  </main>
+
+  <!-- Confetti canvas -->
+  <canvas id="confettiCanvas"></canvas>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // 0) Auth & enrollment context
+    const token = localStorage.getItem("jwt");
+    if (!token) return window.location.href = "login.html";
+
+    const enrollment = JSON.parse(localStorage.getItem("currentEnrollment")||"{}");
+    const enrollmentId = enrollment.enrollment_id;
+
+    const ctx = JSON.parse(localStorage.getItem("currentQuizContext")||"{}");
+    if (!ctx.lessonId) return window.location.href = "index.html";
+
+    // Feedback helper
+    function getFeedback(pct) {
+      if (pct === 100) return "🌟 Perfect! You nailed it!";
+      if (pct >= 80)  return "✅ Great job! A little more review and you'll be perfect.";
+      if (pct >= 50)  return "📝 Good effort! Keep practicing and you'll improve!";
+      return "📚 Let's review the material again and try once more!";
+    }
+
+    // 1) Confetti setup
+    const confCanvas = document.getElementById("confettiCanvas");
+    const cc = confCanvas.getContext("2d");
+    let confetti = [];
+    function resize() {
+      confCanvas.width = window.innerWidth;
+      confCanvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resize);
+    resize();
+    function randomColor() {
+      const colors = ["#ff0","#0ff","#f0f","#0f0","#00f","#f00"];
+      return colors[Math.floor(Math.random()*colors.length)];
+    }
+    function launchConfetti() {
+      confetti = [];
+      for(let i=0;i<150;i++){
+        confetti.push({
+          x: Math.random()*confCanvas.width,
+          y: Math.random()*confCanvas.height - confCanvas.height,
+          size: Math.random()*8+2,
+          color: randomColor(),
+          speedY: Math.random()*5+2,
+          speedX: Math.random()*4-2
+        });
+      }
+      confCanvas.style.display = "block";
+      animateConfetti();
+    }
+    function animateConfetti() {
+      cc.clearRect(0,0,confCanvas.width,confCanvas.height);
+      confetti.forEach((c,i)=>{
+        c.y += c.speedY; c.x += c.speedX;
+        cc.fillStyle = c.color;
+        cc.beginPath();
+        cc.arc(c.x,c.y,c.size,0,2*Math.PI);
+        cc.fill();
+        if(c.y > confCanvas.height) confetti.splice(i,1);
+      });
+      if(confetti.length>0) requestAnimationFrame(animateConfetti);
+      else confCanvas.style.display="none";
+    }
+
+    // 2) Load quiz data
+    const lesson = JSON.parse(localStorage.getItem("currentLesson")||"{}");
+    let content = lesson.content;
+    if (typeof content === "string") content = JSON.parse(content);
+    const quizBlock = (content.contentBlocks||[]).find(b=>b.type==="quiz");
+
+    // 3) Title
+    let title = quizBlock.title;
+    if (title.startsWith("Quiz:")) title = title.split(":")[1].trim()+" Quiz";
+    const container = document.getElementById("quiz1");
+    container.innerHTML = "<h2>"+title+"</h2>";
+
+    // 4) Parse & render
+    const tmp = document.createElement("div");
+    tmp.innerHTML = quizBlock.content;
+    const lis = Array.from(tmp.querySelectorAll("ol>li"));
+    const akP = tmp.querySelector("p strong");
+    let answerKey = [];
+    if(akP){
+      const txt = akP.parentElement.textContent.replace(/Answer Key:\s*/i,"");
+      answerKey = txt.split(/\s*,\s*/).map(p=>p.split(/[-–]/)[1].trim().toLowerCase());
+    }
+    lis.forEach((li,i)=>{
+      const nodes = Array.from(li.childNodes).filter(n=>n.nodeName!=="BR");
+      const q = nodes[0].textContent.trim();
+      const qDiv = document.createElement("div"); qDiv.className="question";
+      qDiv.innerHTML = `<h4>${i+1}. ${q}</h4>`;
+      let start = 1;
+      if(nodes[1]?.nodeName==="CODE"){
+        const pre = document.createElement("pre");
+        pre.innerHTML = nodes[1].outerHTML;
+        qDiv.appendChild(pre);
+        start=2;
+      }
+      const opts = document.createElement("div"); opts.className="options";
+      for(let j=start;j<nodes.length;j++){
+        const txt = nodes[j].textContent.trim();
+        if(!txt) continue;
+        const o = document.createElement("div");
+        o.className="option";
+        o.textContent=txt;
+        o.addEventListener("click",()=>{
+          opts.querySelectorAll(".option").forEach(x=>x.classList.remove("selected"));
+          o.classList.add("selected");
+        });
+        opts.appendChild(o);
+      }
+      qDiv.appendChild(opts);
+      container.appendChild(qDiv);
+    });
+
+    // 5) Submit & results
+    container.insertAdjacentHTML("beforeend",
+      '<button class="submit-btn">Submit Quiz</button>'+
+      '<div class="results"></div>'
+    );
+    const submitBtn = container.querySelector(".submit-btn");
+    const resultsDiv = container.querySelector(".results");
+
+    submitBtn.addEventListener("click",()=>{
+      let correct=0;
+      const answers={};
+      document.querySelectorAll(".question").forEach((qDiv,i)=>{
+        const sel = qDiv.querySelector(".option.selected");
+        const ltr = sel?.textContent.trim().charAt(0).toLowerCase()||null;
+        answers[`q${i+1}`]=ltr;
+        if(ltr===answerKey[i]){
+          sel.classList.add("correct"); correct++;
+        } else if(sel){
+          sel.classList.add("incorrect");
+        }
+      });
+      const total=answerKey.length;
+      const pct=Math.round(correct/total*100);
+
+      // Badge determination
+      let badge=null, emoji="";
+      if(pct>=90){ badge="Gold"; emoji="🥇"; }
+      else if(pct>=80){ badge="Silver"; emoji="🥈"; }
+      else if(pct>=70){ badge="Bronze"; emoji="🥉"; }
+
+      let badgeHTML="";
+      if(badge){
+        badgeHTML = `<div class="badge"><img src="badges/${badge.toLowerCase()}.png" alt="${badge} Badge"/>${emoji} You earned the <strong>${badge} Badge</strong>!</div>`;
+        launchConfetti();
+      } else {
+        badgeHTML = `<div class="badge">No badge earned — try again to reach 70%!</div>`;
+      }
+
+      resultsDiv.style.display="block";
+      resultsDiv.innerHTML = badgeHTML + `
+        <div class="score">You scored ${correct} of ${total} (${pct}%)</div>
+        <div class="feedback-local">${getFeedback(pct)}</div>
+        <div class="feedback-ai">💬 Fetching AI feedback…</div>
+      `;
+
+      // persist percentage and answers
+      const updatedMarks   = {...(enrollment.quiz_marks||{}),   [ctx.lessonId]: pct};
+      const updatedAnswers = {...(enrollment.quiz_answers||{}), [ctx.lessonId]: answers};
+
+      fetch(`/api/enrollments/${enrollmentId}`, {
+        method:"PUT",
+        headers:{
+          "Content-Type":"application/json",
+          "Authorization":`Bearer ${token}`
+        },
+        body:JSON.stringify({
+          current_level:  enrollment.current_level,
+          current_lesson: enrollment.current_lesson,
+          quiz_marks:     updatedMarks,
+          quiz_answers:   updatedAnswers,
+          ai_feedback:    enrollment.ai_feedback
+        })
+      })
+      .then(r=>r.json())
+      .then(u=>localStorage.setItem("currentEnrollment",JSON.stringify(u)))
+      .catch(console.error);
+
+      // AI feedback
+      fetch("http://localhost:5000/chat", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({ score:pct, total, topic:title })
+      })
+      .then(r=>r.json())
+      .then(js=>{
+        resultsDiv.querySelector(".feedback-ai").innerText=js.response;
+      })
+      .catch(()=>{
+        const ai=resultsDiv.querySelector(".feedback-ai");
+        ai.innerText="Error fetching AI feedback";
+        ai.style.color="red";
+      });
+    });
+  });
+  </script>
+</body>
+</html>

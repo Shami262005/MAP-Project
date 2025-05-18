@@ -17,7 +17,7 @@ public class AdminController {
     public AdminController(ValidateUser validateuser, AddNewUser newUser, AddNewUser createUser) {
         Validateuser = validateuser;
         CreateUser = createUser;
-
+       
     }
 
     @PostMapping("Login")
