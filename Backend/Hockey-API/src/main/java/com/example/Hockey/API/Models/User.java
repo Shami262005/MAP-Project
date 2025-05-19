@@ -27,7 +27,7 @@ public class User {
     @Column(name = "user_role",nullable = false)
     private RoleType UserRole ;
     @Column(name = "username",unique = true,nullable = false)
-    private String Username;
+    private String username;
     @Column(name = "phone")
     private Long phone_Number;
     @Transient
@@ -90,11 +90,11 @@ public class User {
     }
 
     public String getUsername() {
-        return Username;
+        return username;
     }
 
     public void setUsername(String username) {
-        Username = username;
+        username = username;
     }
 
     public Long getPhone_Number() {

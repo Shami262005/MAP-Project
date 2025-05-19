@@ -15,7 +15,6 @@ public class Team_Manager {
     @Column(name = "team_id",nullable = false)
     private int team_id;
     public Team_Manager(){
-
     }
 
     public Team_Manager(int user_id, int team_id) {
