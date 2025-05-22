@@ -38,14 +38,10 @@ public class AdminController {
 
     private final EventService eventService;
 
-    public AdminController(ValidateUser validateuser, AddNewUser newUser, com.example.Hockey.API.Services.getTeamByID getTeamByID, DeleteTeam deleteTeam, GetAllTeams getall, AddNewUser createUser, Teamregistration teamreg, EventService eventService) {
-        this.Validateuser = validateuser;
-        this.getTeamByID = getTeamByID;
-        this.deleteTeam = deleteTeam;
-        this.getallteams = getall;
-        this.CreateUser = createUser;
-        Teamreg = teamreg;
-        this.eventService = eventService;
+    public AdminController(ValidateUser validateuser, AddNewUser newUser, AddNewUser createUser) {
+        Validateuser = validateuser;
+        CreateUser = createUser;
+
     }
 
     @PostMapping("Login")

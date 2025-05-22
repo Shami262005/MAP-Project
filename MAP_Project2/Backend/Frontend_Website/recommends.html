@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Subscription Dialog</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="RBody">
+    <div class="dialog-container">
+        <div class="dialog-header">
+            <div class="dialog-title">Suggested Languages</div>
+            <button class="close-btn">&times;</button>
+        </div>
+        
+        <div class="dialog-body">
+            <p>Based on your preferences, we recommend these languages. Select the ones you'd like to enrol to:</p>
+            
+            <!-- Recommendation Text Box -->
+            <div id="recommendationText" class="recommendation-message" style="margin-bottom: 15px; font-style: italic;">
+                <!-- Dynamic recommendation message will go here -->
+            </div>
+
+            <div class="language-grid" id="languageContainer">
+                <!-- Language cards will be dynamically inserted here -->
+            </div>
+        </div>
+        
+        <div class="dialog-footer">
+            <button class="confirm-btn">Confirm Selection</button>
+        </div>
+    </div>
+    <script src="recommends.js"></script>
+</body>
+</html>
