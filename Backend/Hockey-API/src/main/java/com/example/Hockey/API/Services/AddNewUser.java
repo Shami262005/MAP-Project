@@ -18,6 +18,7 @@ import java.util.Random;
 public class AddNewUser implements Command<User, String> {
     private Random rnd = new Random();
     private int randomCode ;
+    OneTimeCodeModel newCode = null;
     private final SendEmail Send;
     private final Userepo Userepo;
     private final PlayerorManager PlayerOrManager;
@@ -32,21 +33,18 @@ public class AddNewUser implements Command<User, String> {
 
     @Override
     public ResponseEntity<String> execute(User input) {
-        OneTimeCodeModel newCode = null;
         BCryptPasswordEncoder PasswordEncoder = new BCryptPasswordEncoder(16);
         String EncryptedPassword = PasswordEncoder.encode(input.getHashed_Password());
         input.setHashed_Password(EncryptedPassword);
         Userepo.save(input);
         Team_Manager NewManagerorPlayer = new Team_Manager(input.getUser_id(),input.getTeam_id());
         PlayerOrManager.save(NewManagerorPlayer);
-        Send.sendEmail(input.getEmail(),"Login Code","");
         randomCode = 10000000 + rnd.nextInt(90000000);
         newCode.setCode(randomCode);
         newCode.setUser_id(input.getUser_id());
         OTP.save(newCode);
         String StringCode = Integer.toString(randomCode);
         Send.sendEmail(input.getEmail(),"Login Code",StringCode);
-
         return ResponseEntity.ok().body("New user successfully created");
     }
 }

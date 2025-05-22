@@ -1,13 +1,30 @@
 package com.example.Hockey.API.Controllers;
 
-import com.example.Hockey.API.Models.*;
-import com.example.Hockey.API.Services.*;
-
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.Hockey.API.Models.Event;
+import com.example.Hockey.API.Models.LoginModel;
+import com.example.Hockey.API.Models.Team;
+import com.example.Hockey.API.Models.User;
+import com.example.Hockey.API.Models.UserDTO;
+import com.example.Hockey.API.Services.AddNewUser;
+import com.example.Hockey.API.Services.DeleteTeam;
+import com.example.Hockey.API.Services.EventService;
+import com.example.Hockey.API.Services.GetAllTeams;
+import com.example.Hockey.API.Services.Teamregistration;
+import com.example.Hockey.API.Services.ValidateUser;
+import com.example.Hockey.API.Services.getTeamByID;
 @CrossOrigin(origins = "*")  
 @RestController
 @RequestMapping("Admin/")
@@ -40,11 +57,10 @@ public class AdminController {
         return getTeamByID.execute(Id);
     }
 
-    @PutMapping("NewUser")
+    @PostMapping("NewUser")
     public ResponseEntity<String> putUser(@RequestBody User NewUser){
 
-        System.out.println(NewUser.getEmail());
-        System.out.println(NewUser.getFirstName());
+        
         return CreateUser.execute(NewUser);
     }
     @GetMapping("getallTeams")

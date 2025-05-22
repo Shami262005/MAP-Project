@@ -15,39 +15,23 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int User_id;
     @Column(name = "first_name")
-    private String FirstName;
+    private String firstName;
     @Column(name = "last_name")
-    private String LastName;
+    private String lastName;
     @Column(name = "email",unique = true,nullable = false)
-    private String Email;
+    private String email;
     @Column(name = "password")
     private String hashed_Password;
     @Enumerated(EnumType.STRING)
     @JdbcType(PostgreSQLEnumJdbcType.class)
     @Column(name = "user_role",nullable = false)
-    private RoleType UserRole ;
+    private RoleType userRole ;
     @Column(name = "username",unique = true,nullable = false)
     private String username;
     @Column(name = "phone")
     private Long phone_Number;
     @Transient
-    private int Team_id;
-
-    public int getTeam_id() {
-        return Team_id;
-    }
-
-    public void setTeam_id(int team_id) {
-        Team_id = team_id;
-    }
-
-    public RoleType getUserRole() {
-        return UserRole;
-    }
-
-    public void setUserRole(RoleType userRole) {
-        UserRole = userRole;
-    }
+    private int team_id;
 
     public int getUser_id() {
         return User_id;
@@ -58,27 +42,27 @@ public class User {
     }
 
     public String getFirstName() {
-        return FirstName;
+        return firstName;
     }
 
     public void setFirstName(String firstName) {
-        FirstName = firstName;
+        this.firstName = firstName;
     }
 
     public String getLastName() {
-        return LastName;
+        return lastName;
     }
 
     public void setLastName(String lastName) {
-        LastName = lastName;
+        this.lastName = lastName;
     }
 
     public String getEmail() {
-        return Email;
+        return email;
     }
 
     public void setEmail(String email) {
-        Email = email;
+        this.email = email;
     }
 
     public String getHashed_Password() {
@@ -89,12 +73,20 @@ public class User {
         this.hashed_Password = hashed_Password;
     }
 
+    public RoleType getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(RoleType userRole) {
+        this.userRole = userRole;
+    }
+
     public String getUsername() {
         return username;
     }
 
     public void setUsername(String username) {
-        username = username;
+        this.username = username;
     }
 
     public Long getPhone_Number() {
@@ -103,5 +95,13 @@ public class User {
 
     public void setPhone_Number(Long phone_Number) {
         this.phone_Number = phone_Number;
+    }
+
+    public int getTeam_id() {
+        return team_id;
+    }
+
+    public void setTeam_id(int team_id) {
+        this.team_id = team_id;
     }
 }
