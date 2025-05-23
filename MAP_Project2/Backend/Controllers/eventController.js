@@ -167,29 +167,44 @@ async function uninviteUser(req, res, next) {
 }
 
 // 7) Events *this user* is invited to
+// 7) Events *this user* is invited to
+// 7) Events this user is invited to
+// 7) Events this user is invited to
+// 7) Events this user is invited to
 async function getInvitedEvents(req, res, next) {
   try {
     const { user_id } = req.user;
+
     const { rows } = await pool.query(`
       SELECT
         e.*,
-        json_agg(
-          json_build_object(
-            'user_id', u.user_id,
-            'first_name', u.first_name,
-            'last_name', u.last_name,
-            'status', inv.status,
-            'invited_at', inv.invited_at
-          )
+        COALESCE(
+          json_agg(
+            json_build_object(
+              'user_id',    u2.user_id,
+              'first_name', u2.first_name,
+              'last_name',  u2.last_name,
+              'status',     inv2.status,
+              'invited_at', inv2.invited_at
+            )
+          ) FILTER (WHERE u2.user_id IS NOT NULL),
+          '[]'
         ) AS invitees
       FROM events e
-      JOIN user_events_invitations inv
-        ON inv.event_id = e.event_id
-      JOIN users u
-        ON u.user_id = inv.user_id
-      WHERE inv.user_id = $1
+
+      -- only events where this user is invited
+      JOIN user_events_invitations inv_user
+        ON inv_user.event_id = e.event_id
+       AND inv_user.user_id  = $1
+
+      -- bring in all invitees for those events
+      LEFT JOIN user_events_invitations inv2
+        ON inv2.event_id = e.event_id
+      LEFT JOIN users u2
+        ON u2.user_id = inv2.user_id
+
       GROUP BY e.event_id
-      ORDER BY e.date ASC
+      ORDER BY e.date ASC;
     `, [user_id]);
 
     res.json(rows);
@@ -197,6 +212,8 @@ async function getInvitedEvents(req, res, next) {
     next(err);
   }
 }
+
+
 
 module.exports = {
   createEvent,

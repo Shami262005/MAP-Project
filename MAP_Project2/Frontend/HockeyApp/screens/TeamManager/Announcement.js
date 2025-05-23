@@ -1,6 +1,7 @@
 // screens/TeamManager/Announcement.js
 
 import React, { useState, useEffect } from 'react';
+import { useIsFocused } from '@react-navigation/native';
 import {
   SafeAreaView,
   View,
@@ -17,10 +18,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { listAnnouncements } from '../../src/api/announcments';
 
 export default function Announcement({ navigation }) {
-  const [teamId, setTeamId] = useState(null);
+  const isFocused = useIsFocused();
+  const [teamId, setTeamId]             = useState(null);
   const [announcements, setAnnouncements] = useState([]);
 
+  // reload on mount and every time screen gains focus
   useEffect(() => {
+    if (!isFocused) return;
     (async () => {
       const id = await AsyncStorage.getItem('team_id');
       if (id) setTeamId(Number(id));
@@ -31,7 +35,7 @@ export default function Announcement({ navigation }) {
         console.error('Failed to load announcements', err);
       }
     })();
-  }, []);
+  }, [isFocused]);
 
   const handleLogout = async () => {
     await AsyncStorage.multiRemove(['token','user_role','user_id','team_id']);
@@ -99,8 +103,10 @@ export default function Announcement({ navigation }) {
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.navItem}>
-            <Ionicons name="megaphone" size={24} color="red" />
-            <Text style={[styles.navLabel, { color: 'red' }]}>Announcements</Text>
+            <Ionicons name="megaphone" size={24} color="#22396D" />
+            <Text style={[styles.navLabel, { color: '#22396D' }]}>
+              Announcements
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -123,7 +129,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 60,
     resizeMode: 'contain',
-    marginTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+    marginTop: Platform.OS === 'android' ? StatusBar.currentHeight : 14,
   },
   logoutBtn:   {
     position: 'absolute',
@@ -148,18 +154,18 @@ const styles = StyleSheet.create({
   card:        {
     backgroundColor: '#f9f9f9',
     marginHorizontal: 20,
-    marginBottom: 16,
-    marginVertical:12,
+    marginVertical: 12,
     borderRadius: 15,
     overflow: 'hidden',
     alignItems: 'center',
+    elevation: 4,
   },
   cardImage:   {
     width: '100%',
     height: 180,
-    borderRadius:15,
-    borderBottomRightRadius:0,
-    borderBottomLeftRadius:0,
+    borderRadius: 15,
+    borderBottomRightRadius: 0,
+    borderBottomLeftRadius: 0,
     resizeMode: 'cover',
   },
   cardTitle:   {

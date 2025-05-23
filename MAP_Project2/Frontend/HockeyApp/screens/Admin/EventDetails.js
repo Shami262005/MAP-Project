@@ -1,4 +1,4 @@
-// screens/Admin/EventDetailsScreen.js
+// screens/TeamManager/EventDetailsScreen.js
 
 import React, { useState, useEffect } from 'react';
 import {
@@ -13,21 +13,24 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { getEventById } from '../../src/api/events';
+import { getEvent } from '../../src/api/events';
 
 export default function EventDetailsScreen({ navigation, route }) {
+  // 1) If the navigator passed you the full event object, use that...
   const passed = route.params?.event;
+  // 2) ...otherwise grab an ID
   const eventId = passed?.event_id ?? route.params?.eventId;
 
   const [event, setEvent]     = useState(passed || null);
   const [loading, setLoading] = useState(!passed);
 
   useEffect(() => {
-    if (passed) return;
-    if (!eventId) { setLoading(false); return; }
+    if (passed) return;       // already have it
+    if (!eventId) return setLoading(false);
+
     (async () => {
       try {
-        const data = await getEventById(eventId);
+        const data = await getEvent(eventId);
         setEvent(data);
       } catch (err) {
         console.error('Failed to load event details', err);
@@ -51,7 +54,7 @@ export default function EventDetailsScreen({ navigation, route }) {
     description = '',
     venue = '',
     date = '',
-    // your controller returns this array
+    // now matching the backend alias
     invitees = [],
   } = event || {};
 
@@ -62,6 +65,7 @@ export default function EventDetailsScreen({ navigation, route }) {
         year: 'numeric',
       })
     : '';
+
   const formattedTime = date
     ? new Date(date).toLocaleTimeString('en-US', {
         hour: '2-digit',
@@ -89,9 +93,8 @@ export default function EventDetailsScreen({ navigation, route }) {
               <Ionicons name="arrow-back" size={24} color="#22396D" />
             </TouchableOpacity>
             <Text style={styles.headerTitle}>Event Details</Text>
-            <TouchableOpacity onPress={() => {/* TODO: edit logic */}}>
-              <Ionicons name="pencil" size={24} color="#22396D" />
-            </TouchableOpacity>
+            {/* no edit icon for manager */}
+            <View style={{ width: 24 }} />
           </View>
 
           {/* Event Info */}
@@ -113,7 +116,7 @@ export default function EventDetailsScreen({ navigation, route }) {
           <Text style={styles.label}>Time</Text>
           <Text style={styles.value}>{formattedTime}</Text>
 
-          {/* Invited as horizontal chips */}
+          {/* Invited */}
           <Text style={styles.sectionTitle}>Invited</Text>
           {invitees.length > 0 ? (
             <ScrollView
@@ -132,14 +135,6 @@ export default function EventDetailsScreen({ navigation, route }) {
           ) : (
             <Text style={styles.value}>No one invited yet.</Text>
           )}
-
-          {/* Delete Button */}
-          <TouchableOpacity
-            style={styles.deleteButton}
-            onPress={() => {/* TODO: delete logic */}}
-          >
-            <Text style={styles.deleteButtonText}>Delete Event</Text>
-          </TouchableOpacity>
         </ScrollView>
       </SafeAreaView>
     </>
@@ -150,6 +145,11 @@ const styles = StyleSheet.create({
   safe: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   container: {
     paddingHorizontal: 20,
@@ -187,7 +187,6 @@ const styles = StyleSheet.create({
   },
   chipsContainer: {
     paddingLeft: 0,
-    paddingBottom: 12,
   },
   chip: {
     backgroundColor: '#E0E0E0',
@@ -199,22 +198,5 @@ const styles = StyleSheet.create({
   chipText: {
     fontSize: 14,
     color: '#000',
-  },
-  deleteButton: {
-    backgroundColor: '#D32F2F',
-    borderRadius: 10,
-    paddingVertical: 14,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  deleteButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 });

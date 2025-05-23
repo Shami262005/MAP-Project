@@ -1,4 +1,7 @@
+// screens/TeamManager/EventsScreen.js
+
 import React, { useState, useEffect } from 'react';
+import { useIsFocused } from '@react-navigation/native';
 import {
   SafeAreaView,
   View,
@@ -16,18 +19,19 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { listInvitedEvents } from '../../src/api/events';
 
 export default function EventsScreen({ navigation }) {
-  const [teamId, setTeamId]     = useState(null);
-  const [events, setEvents]     = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [search, setSearch]     = useState('');
+  const isFocused = useIsFocused();
+  const [teamId, setTeamId]   = useState(null);
+  const [events, setEvents]   = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch]   = useState('');
 
+  // reload on mount and every time screen gains focus
   useEffect(() => {
+    if (!isFocused) return;
     (async () => {
-      // get team_id for nav
+      setLoading(true);
       const id = await AsyncStorage.getItem('team_id');
       if (id) setTeamId(Number(id));
-
-      // fetch invited events
       try {
         const evs = await listInvitedEvents();
         setEvents(evs);
@@ -37,11 +41,19 @@ export default function EventsScreen({ navigation }) {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [isFocused]);
 
   const filtered = events.filter(e =>
     e.event_name.toLowerCase().includes(search.toLowerCase())
   );
+
+  if (loading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#22396D" />
+      </View>
+    );
+  }
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
@@ -55,20 +67,19 @@ export default function EventsScreen({ navigation }) {
     </TouchableOpacity>
   );
 
-  if (loading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#22396D" />
-      </View>
-    );
-  }
-
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" translucent={false} />
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="#fff"
+        translucent={false}
+      />
 
       <View style={styles.container}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
           <Ionicons name="arrow-back" size={24} color="#22396D" />
         </TouchableOpacity>
         <Text style={styles.header}>Upcoming Events</Text>
@@ -111,8 +122,8 @@ export default function EventsScreen({ navigation }) {
             <Text style={styles.navLabel}>Announcements</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.navItem}>
-            <MaterialIcons name="event" size={24} color="red" />
-            <Text style={[styles.navLabel, { color: 'red' }]}>Events</Text>
+            <MaterialIcons name="event" size={24} color="#22396D" />
+            <Text style={[styles.navLabel, { color: '#22396D' }]}>Events</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -143,6 +154,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     padding: 15,
     borderRadius: 10,
+    elevation: 4,
   },
   eventName:   { fontSize: 16, fontWeight: 'bold', color: '#22396D' },
   eventDate:   { fontSize: 14, color: '#555', marginTop: 4 },

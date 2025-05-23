@@ -38,7 +38,7 @@ router.post('/',
 
 router.delete('/:id',
   authenticateToken,
-  authorizeRoles('admin'),
+  authorizeRoles('admin','coach'),
   deleteUser
 );
 

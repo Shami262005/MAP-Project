@@ -1,6 +1,6 @@
 // screens/Admin/ManageAnnouncments.js
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   SafeAreaView,
   View,
@@ -15,24 +15,27 @@ import {
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useIsFocused } from '@react-navigation/native';
 import { listAnnouncements } from '../../src/api/announcments';
 
 export default function AnnouncementsScreen({ navigation }) {
+  const isFocused = useIsFocused();
   const [search, setSearch] = useState('');
   const [announcements, setAnnouncements] = useState([]);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const data = await listAnnouncements();
-        setAnnouncements(data);
-      } catch (err) {
-        console.error('Error loading announcements', err);
-      }
-    })();
+  const fetchAnnouncements = useCallback(async () => {
+    try {
+      const data = await listAnnouncements();
+      setAnnouncements(data);
+    } catch (err) {
+      console.error('Error loading announcements', err);
+    }
   }, []);
 
-  // filter by title
+  useEffect(() => {
+    if (isFocused) fetchAnnouncements();
+  }, [isFocused, fetchAnnouncements]);
+
   const filtered = announcements.filter(a =>
     a.heading.toLowerCase().includes(search.toLowerCase())
   );
@@ -43,7 +46,6 @@ export default function AnnouncementsScreen({ navigation }) {
       day: 'numeric',
       year: 'numeric',
     });
-
     return (
       <TouchableHighlight
         underlayColor="#E5E9F4"
@@ -65,11 +67,7 @@ export default function AnnouncementsScreen({ navigation }) {
 
   return (
     <>
-      <StatusBar
-        translucent
-        backgroundColor="transparent"
-        barStyle="dark-content"
-      />
+      <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
       <SafeAreaView
         style={[
           styles.safe,
@@ -77,7 +75,6 @@ export default function AnnouncementsScreen({ navigation }) {
         ]}
       >
         <ScrollView contentContainerStyle={styles.container}>
-          {/* Back */}
           <TouchableHighlight
             underlayColor="transparent"
             onPress={() => navigation.goBack()}
@@ -86,13 +83,11 @@ export default function AnnouncementsScreen({ navigation }) {
             <Ionicons name="arrow-back" size={24} color="#22396D" />
           </TouchableHighlight>
 
-          {/* Header */}
           <View style={styles.header}>
             <Ionicons name="megaphone" size={48} color="#22396D" />
             <Text style={styles.headerTitle}>Announcements</Text>
           </View>
 
-          {/* Search */}
           <View style={styles.search}>
             <Ionicons name="search" size={18} color="#888" />
             <TextInput
@@ -104,7 +99,6 @@ export default function AnnouncementsScreen({ navigation }) {
             />
           </View>
 
-          {/* List */}
           <FlatList
             data={filtered}
             keyExtractor={item => item.announcement_id.toString()}
@@ -115,18 +109,16 @@ export default function AnnouncementsScreen({ navigation }) {
               <Text style={styles.empty}>No announcements found.</Text>
             }
           />
+        </ScrollView>
 
-          </ScrollView>
-          {/* Add Button */}
-          <TouchableHighlight
-            underlayColor="#1b2f68"
-            style={styles.fab}
-            onPress={() => navigation.navigate('AddAnnouncement')}
-          >
-            <Ionicons name="add" size={28} color="#fff" />
-          </TouchableHighlight>
-          <Text style={styles.fabLabel}>Add</Text>
-        
+        <TouchableHighlight
+          underlayColor="#1b2f68"
+          style={styles.fab}
+          onPress={() => navigation.navigate('AddAnnouncement')}
+        >
+          <Ionicons name="add" size={28} color="#fff" />
+        </TouchableHighlight>
+        <Text style={styles.fabLabel}>Add</Text>
       </SafeAreaView>
     </>
   );
@@ -135,9 +127,7 @@ export default function AnnouncementsScreen({ navigation }) {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#fff' },
   container: { padding: 20, paddingBottom: 40 },
-
   backBtn: { marginBottom: 10, alignSelf: 'flex-start' },
-
   header: { alignItems: 'center', marginBottom: 20 },
   headerTitle: {
     marginTop: 8,
@@ -145,7 +135,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#22396D',
   },
-
   search: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -156,11 +145,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   searchInput: { marginLeft: 8, flex: 1, fontSize: 16, color: '#000' },
-
-  cardWrapper: {
-    borderRadius: 12,
-    marginBottom: 16,
-  },
+  cardWrapper: { borderRadius: 12, marginBottom: 16 },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -188,9 +173,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   date: { fontSize: 14, color: '#555' },
-
   empty: { textAlign: 'center', color: '#888', marginTop: 40 },
-
   fab: {
     position: 'absolute',
     bottom: 60,
@@ -207,7 +190,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 40,
     alignSelf: 'center',
-    marginBottom: -10,
     color: '#22396D',
     fontWeight: '600',
   },

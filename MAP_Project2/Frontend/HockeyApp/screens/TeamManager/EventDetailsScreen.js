@@ -16,16 +16,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { getEvent } from '../../src/api/events';
 
 export default function EventDetailsScreen({ navigation, route }) {
-  // 1) If the navigator passed you the full event object, use that...
   const passed = route.params?.event;
-  // 2) ...otherwise grab an ID
   const eventId = passed?.event_id ?? route.params?.eventId;
 
   const [event, setEvent]     = useState(passed || null);
   const [loading, setLoading] = useState(!passed);
 
   useEffect(() => {
-    if (passed) return;       // already have it
+    if (passed) return;
     if (!eventId) return setLoading(false);
 
     (async () => {
@@ -54,7 +52,6 @@ export default function EventDetailsScreen({ navigation, route }) {
     description = '',
     venue = '',
     date = '',
-    // backend returns `invitations: [...]`
     invitations = [],
   } = event || {};
 
@@ -81,10 +78,7 @@ export default function EventDetailsScreen({ navigation, route }) {
         barStyle="dark-content"
       />
       <SafeAreaView
-        style={[
-          styles.safe,
-          Platform.OS === 'android' && { paddingTop: StatusBar.currentHeight },
-        ]}
+        style={[styles.safe, Platform.OS === 'android' && { paddingTop: StatusBar.currentHeight }]}
       >
         <ScrollView contentContainerStyle={styles.container}>
           {/* Header */}
@@ -93,7 +87,6 @@ export default function EventDetailsScreen({ navigation, route }) {
               <Ionicons name="arrow-back" size={24} color="#22396D" />
             </TouchableOpacity>
             <Text style={styles.headerTitle}>Event Details</Text>
-            {/* no edit icon for manager */}
             <View style={{ width: 24 }} />
           </View>
 
@@ -119,18 +112,23 @@ export default function EventDetailsScreen({ navigation, route }) {
           {/* Invited */}
           <Text style={styles.sectionTitle}>Invited</Text>
           {invitations.length > 0 ? (
-            invitations.map(inv => (
-              <View key={inv.user_id} style={styles.chip}>
-                <Text style={styles.chipText}>
-                  {inv.first_name} {inv.last_name}
-                </Text>
-              </View>
-            ))
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.chipsContainer}
+            >
+              {invitations.map(inv => (
+                <View key={inv.user_id} style={styles.chip}>
+                  <Text style={styles.chipText}>
+                    {inv.first_name} {inv.last_name}
+                  </Text>
+                </View>
+              ))}
+            </ScrollView>
           ) : (
             <Text style={styles.value}>No one invited yet.</Text>
           )}
 
-          {/* no delete button for manager */}
         </ScrollView>
       </SafeAreaView>
     </>
@@ -138,7 +136,10 @@ export default function EventDetailsScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  safe:   { flex: 1, backgroundColor: '#fff' },
+  safe: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
   centered: {
     flex: 1,
     justifyContent: 'center',
@@ -178,12 +179,15 @@ const styles = StyleSheet.create({
     marginTop: 25,
     marginBottom: 10,
   },
+  chipsContainer: {
+    paddingLeft: 0,
+  },
   chip: {
     backgroundColor: '#E0E0E0',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 20,
-    marginBottom: 8,
+    marginRight: 8,
   },
   chipText: {
     fontSize: 14,
