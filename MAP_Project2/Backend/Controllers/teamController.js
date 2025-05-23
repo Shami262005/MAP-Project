@@ -246,10 +246,17 @@ async function getTeamDetails(req, res, next) {
 
     // 3) fetch players
     const playersRes = await pool.query(
-      `SELECT user_id, first_name, last_name
-       FROM users
-       WHERE team_id = $1 AND user_role = 'player'
-       ORDER BY first_name, last_name`,
+      `SELECT user_id,
+              first_name,
+              last_name,
+              gender,
+              email,
+              phone,
+              dob
+         FROM users
+        WHERE team_id = $1
+          AND user_role = 'player'
+        ORDER BY first_name, last_name`,
       [teamId]
     );
     const players = playersRes.rows;
