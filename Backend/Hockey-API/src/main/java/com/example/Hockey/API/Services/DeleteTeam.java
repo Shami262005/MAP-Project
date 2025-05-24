@@ -1,5 +1,6 @@
 package com.example.Hockey.API.Services;
 
+import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ public class DeleteTeam {
         reop.deleteAll();
         return ResponseEntity.ok().body("Deletion of all teams successful");
     }
+
     public ResponseEntity<String> DeletebyId(int ID){
         Boolean exists = reop.existsById(ID);
         if (exists){

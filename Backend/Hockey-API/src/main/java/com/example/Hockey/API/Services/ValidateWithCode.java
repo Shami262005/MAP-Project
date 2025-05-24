@@ -7,6 +7,7 @@ import com.example.Hockey.API.Models.OneTimeCodeModel;
 import com.example.Hockey.API.Models.User;
 import com.example.Hockey.API.Repository.OneTimeCoderepo;
 import com.example.Hockey.API.Repository.Userepo;
+import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,7 @@ public class ValidateWithCode implements Query<Integer, User> {
             OTP = OTPrepo.findBycode(input);
             int user_id = OTP.getUser_id();
             NewUser = Userepo.findById(user_id);
+            OTPrepo.deleteById(OTP.getOtp_id());
         }else {
             throw new WrongCode();
         }

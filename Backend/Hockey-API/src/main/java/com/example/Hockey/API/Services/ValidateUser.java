@@ -6,30 +6,28 @@ import com.example.Hockey.API.Models.LoginModel;
 import com.example.Hockey.API.Models.User;
 import com.example.Hockey.API.Models.UserDTO;
 import com.example.Hockey.API.Repository.Userepo;
-import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class ValidateUser implements Query<LoginModel, UserDTO> {
+    UserDTO verifiedUser = null;
     private final Userepo userepo;
 
     public ValidateUser(Userepo userepo) {
         this.userepo = userepo;
     }
 
-    @Transactional
+
     @Override
     public ResponseEntity<UserDTO> execute(LoginModel input) {
-        UserDTO verifiedUser = null;
+
         User UserCredentials;
-        Boolean UserExists = userepo.existsByUsername(input.getUsername());
+        Boolean UserExists = userepo.existsByUserName(input.getUsername());
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
         if(UserExists) {
-            UserCredentials = userepo.findByUsername(input.getUsername());
+            UserCredentials = userepo.findByUserName(input.getUsername());
             String Password = UserCredentials.getHashed_Password();
             boolean isPasswodCorrect = encoder.matches(input.getHashed_Password(), Password);
             if (isPasswodCorrect) {

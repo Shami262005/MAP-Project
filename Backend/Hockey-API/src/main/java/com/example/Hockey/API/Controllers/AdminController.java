@@ -38,10 +38,15 @@ public class AdminController {
 
     private final EventService eventService;
 
-    public AdminController(ValidateUser validateuser, AddNewUser newUser, AddNewUser createUser) {
+    public AdminController(ValidateUser validateuser, AddNewUser newUser, com.example.Hockey.API.Services.getTeamByID getTeamByID, DeleteTeam deleteTeam, GetAllTeams getallteams, AddNewUser createUser, Teamregistration teamreg, EventService eventService) {
         Validateuser = validateuser;
+        this.getTeamByID = getTeamByID;
+        this.deleteTeam = deleteTeam;
+        this.getallteams = getallteams;
         CreateUser = createUser;
 
+        Teamreg = teamreg;
+        this.eventService = eventService;
     }
 
     @PostMapping("Login")
@@ -55,8 +60,6 @@ public class AdminController {
 
     @PostMapping("NewUser")
     public ResponseEntity<String> putUser(@RequestBody User NewUser){
-
-        
         return CreateUser.execute(NewUser);
     }
     @GetMapping("getallTeams")
@@ -71,7 +74,7 @@ public class AdminController {
     public ResponseEntity<String> deleteTeamById(@RequestParam(name = "Id") int Id){
         return deleteTeam.DeletebyId(Id);
     }
-    @PutMapping("addNewTeam")
+    @PostMapping("addNewTeam")
     public ResponseEntity<String> addNewTeam(@RequestBody Team input){
         return Teamreg.execute(input);
     }

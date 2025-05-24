@@ -7,7 +7,9 @@ import com.example.Hockey.API.Models.User;
 import com.example.Hockey.API.Repository.OneTimeCoderepo;
 import com.example.Hockey.API.Repository.PlayerorManager;
 import com.example.Hockey.API.Repository.Userepo;
+import com.example.Hockey.API.RoleType;
 import com.example.Hockey.API.SendEmail;
+import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,9 +18,8 @@ import java.util.Random;
 
 @Service
 public class AddNewUser implements Command<User, String> {
-    private Random rnd = new Random();
-    private int randomCode ;
-    OneTimeCodeModel newCode = null;
+    private final Random rnd = new Random();
+
     private final SendEmail Send;
     private final Userepo Userepo;
     private final PlayerorManager PlayerOrManager;
@@ -30,16 +31,19 @@ public class AddNewUser implements Command<User, String> {
         PlayerOrManager = playerOrManager;
         OTP = otp;
     }
-
+    @Transactional
     @Override
     public ResponseEntity<String> execute(User input) {
+        OneTimeCodeModel newCode = new OneTimeCodeModel();
         BCryptPasswordEncoder PasswordEncoder = new BCryptPasswordEncoder(16);
         String EncryptedPassword = PasswordEncoder.encode(input.getHashed_Password());
         input.setHashed_Password(EncryptedPassword);
         Userepo.save(input);
-        Team_Manager NewManagerorPlayer = new Team_Manager(input.getUser_id(),input.getTeam_id());
-        PlayerOrManager.save(NewManagerorPlayer);
-        randomCode = 10000000 + rnd.nextInt(90000000);
+        if(input.getUserRole()== RoleType.player||input.getUserRole()==RoleType.coach) {
+            Team_Manager NewManagerorPlayer = new Team_Manager(input.getUser_id(), input.getTeam_id());
+            PlayerOrManager.save(NewManagerorPlayer);
+        }
+        int randomCode = 100000 + rnd.nextInt(900000);
         newCode.setCode(randomCode);
         newCode.setUser_id(input.getUser_id());
         OTP.save(newCode);
